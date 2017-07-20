@@ -23,13 +23,17 @@ class CategoriesController extends AdminController
         $searchContent = '';
         $modelClass = $this->init();
 
+        $customUrl = 'admin/'.$this->model.'?init=1';
+
         $contents = $modelClass::latest('created_at');
         if ($request->input('q')) {
             $searchContent = urldecode($request->input('q'));
             $contents = $contents->where('name', 'LIKE', '%'. $searchContent. '%');
+            $customUrl .= '&q='.$searchContent;
         }
 
         $contents = $contents->paginate(10);
+        $contents->withPath($customUrl);
 
         return view('admin.'.$this->model.'.index', compact('contents', 'searchContent'))->with('model', $this->model);
     }
